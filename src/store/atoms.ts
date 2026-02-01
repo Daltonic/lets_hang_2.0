@@ -39,12 +39,12 @@ export const errorState = atom<string | null>({
 
 // Auto-save State
 export const autoSaveState = atom<{
-  lastSaved: string | null;
+  lastSaved?: number;
   isSaving: boolean;
 }>({
   key: 'autoSaveState',
   default: {
-    lastSaved: null,
+    lastSaved: undefined,
     isSaving: false,
   },
 });

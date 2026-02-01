@@ -137,7 +137,7 @@ export const useDatabase = () => {
       });
       setCurrentEvent(savedDraft);
       setAutoSave({
-        lastSaved: new Date().toISOString(),
+        lastSaved: Date.now(),
         isSaving: false,
       });
       return savedDraft;

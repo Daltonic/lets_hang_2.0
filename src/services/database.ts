@@ -219,7 +219,7 @@ class DatabaseService {
     )
   }
 
-  async reorderModules(eventId: string, moduleIds: string[]): Promise<void> {
+  async reorderModules(_eventId: string, moduleIds: string[]): Promise<void> {
     const modules = await this.getCustomModules()
 
     // Update order for each module
