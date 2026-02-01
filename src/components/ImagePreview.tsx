@@ -56,7 +56,8 @@ const ImagePreview = ({
             // Compress image to reduce storage size
             try {
                 imageUrl = await compressImage(imageUrl);
-                console.log('Image compressed from', event.target?.result.length, 'to', imageUrl.length, 'bytes');
+                const originalSize = typeof event.target?.result === 'string' ? event.target.result.length : 0;
+                console.log('Image compressed from', originalSize, 'to', imageUrl.length, 'bytes');
             } catch (error) {
                 console.error('Error compressing image:', error);
             }
