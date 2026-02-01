@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { MapPin, DollarSign, Calendar, Users, Image as ImageIcon, Link, MessageSquare } from 'lucide-react';
+import { MapPin, DollarSign, Calendar, Users, Image as ImageIcon, Link, MessageSquare, Lock, ArrowRight, Grid2x2, Play, Sparkles } from 'lucide-react';
 
 interface GradientColors {
     primary: string;
@@ -266,14 +266,16 @@ const EventCreator = () => {
             <canvas ref={canvasRef} className="hidden" />
 
             <header className="relative z-10 px-6 py-6 flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-white/90">
-                    let's hang
-                </h1>
-                <nav className="hidden md:flex gap-8 text-white/80">
-                    <button className="hover:text-white transition-colors">Home</button>
-                    <button className="hover:text-white transition-colors">People</button>
-                    <button className="hover:text-white transition-colors">Search</button>
-                </nav>
+                <div className="flex items-center gap-8">
+                    <h1 className="text-2xl font-bold text-white/90">
+                        let's hang
+                    </h1>
+                    <nav className="hidden md:flex gap-8 text-white/80">
+                        <button className="hover:text-white transition-colors">Home</button>
+                        <button className="hover:text-white transition-colors">People</button>
+                        <button className="hover:text-white transition-colors">Search</button>
+                    </nav>
+                </div>
                 <button className="px-6 py-2 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all shadow-lg">
                     Sign in
                 </button>
@@ -293,7 +295,7 @@ const EventCreator = () => {
                                     onClick={() => fileInputRef.current?.click()}
                                     className="absolute bottom-4 right-4 p-3 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 transition-all border border-white/40 shadow-lg"
                                 >
-                                    <ImageIcon size={20} />
+                                    <ImageIcon size={20} className="text-pink-300" />
                                 </button>
                             </div>
                         </div>
@@ -302,7 +304,7 @@ const EventCreator = () => {
                             onClick={() => fileInputRef.current?.click()}
                             className="w-full py-4 bg-white/20 backdrop-blur-md rounded-2xl text-white hover:bg-white/25 transition-all flex items-center justify-center gap-2 shadow-lg border border-white/30"
                         >
-                            <ImageIcon size={20} />
+                            <ImageIcon size={20} className="text-lime-300" />
                             Change background
                         </button>
 
@@ -321,11 +323,8 @@ const EventCreator = () => {
                         </h2>
 
                         <div className="relative bg-black/10 backdrop-blur-sm rounded-2xl">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <rect x="5" y="11" width="14" height="10" rx="2" />
-                                    <path d="M7 11V7a5 5 0 0110 0v4" />
-                                </svg>
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2">
+                                <Lock size={20} className="text-gray-300" />
                             </div>
                             <input
                                 type="tel"
@@ -334,10 +333,8 @@ const EventCreator = () => {
                                 onChange={(e) => setPhoneNumber(e.target.value)}
                                 className="w-full pl-12 pr-12 py-4 bg-black/10 backdrop-blur-sm rounded-2xl text-white placeholder-white/50 border border-white/20 focus:outline-none focus:border-white/40 transition-all"
                             />
-                            <button className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded-lg transition-all">
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-white">
-                                    <path d="M4 10h12m0 0l-4-4m4 4l-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                </svg>
+                            <button className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/20 bg-white/10 rounded-lg transition-all">
+                                <ArrowRight size={20} className="text-white" />
                             </button>
                         </div>
 
@@ -356,7 +353,7 @@ const EventCreator = () => {
                             <div className="h-px bg-white/10" />
 
                             <div className="flex items-center gap-3 text-white/90">
-                                <MapPin size={20} className="text-white/60" />
+                                <MapPin size={20} className="text-red-400" />
                                 <input
                                     type="text"
                                     placeholder="Location"
@@ -369,7 +366,7 @@ const EventCreator = () => {
                             <div className="h-px bg-white/10" />
 
                             <div className="flex items-center gap-3 text-white/90">
-                                <DollarSign size={20} className="text-white/60" />
+                                <DollarSign size={20} className="text-yellow-300" />
                                 <input
                                     type="text"
                                     placeholder="Cost per person"
@@ -411,24 +408,19 @@ const EventCreator = () => {
 
                         <div className="bg-gradient-to-br from-black/40 via-black/30 to-black/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 relative overflow-hidden shadow-2xl">
                             <div className="absolute top-8 left-8 text-white/25 z-0">
-                                <MessageSquare size={32} strokeWidth={1.5} />
+                                <MessageSquare size={32} strokeWidth={1.5} className="text-gray-400" />
                             </div>
                             <div className="absolute top-8 right-8 text-white/25 z-0">
-                                <Link size={32} strokeWidth={1.5} />
+                                <Link size={32} strokeWidth={1.5} className="text-cyan-400" />
                             </div>
                             <div className="absolute bottom-8 left-10 text-white/25 z-0">
-                                <Users size={32} strokeWidth={1.5} />
+                                <Users size={32} strokeWidth={1.5} className="text-orange-400" />
                             </div>
                             <div className="absolute bottom-8 right-10 text-white/25 z-0">
-                                <ImageIcon size={32} strokeWidth={1.5} />
+                                <ImageIcon size={32} strokeWidth={1.5} className="text-purple-400" />
                             </div>
                             <div className="absolute top-1/2 left-6 -translate-y-1/2 text-white/25 z-0">
-                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                    <rect x="3" y="3" width="7" height="7" />
-                                    <rect x="14" y="3" width="7" height="7" />
-                                    <rect x="3" y="14" width="7" height="7" />
-                                    <rect x="14" y="14" width="7" height="7" />
-                                </svg>
+                                <Grid2x2 size={32} strokeWidth={1.5} className="text-gray-400" />
                             </div>
 
                             <div className="relative z-10 text-center space-y-6">
@@ -445,10 +437,7 @@ const EventCreator = () => {
                                         background: `linear-gradient(135deg, ${gradient.primary} 0%, ${gradient.secondary} 50%, ${gradient.accent} 100%)`
                                     }}
                                 >
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                        <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor" opacity="0.5" />
-                                        <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
-                                    </svg>
+                                    <Sparkles size={20} className="text-yellow-200" />
                                     Customize
                                 </button>
                             </div>
@@ -457,10 +446,7 @@ const EventCreator = () => {
                         <button
                             className="w-full py-4 bg-white/20 backdrop-blur-md rounded-2xl text-white hover:bg-white/25 transition-all flex items-center justify-center gap-2 shadow-lg border border-white/30"
                         >
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
-                                <path d="M10 8l6 4-6 4V8z" fill="currentColor" />
-                            </svg>
+                            <Play size={24} className="text-green-400 fill-green-400" />
                             Go live
                         </button>
                     </div>
