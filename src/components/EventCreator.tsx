@@ -8,7 +8,7 @@ interface GradientColors {
 }
 
 const defaultImage = {
-    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjRkYTY7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNhODdhZmY7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY4OGZmO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iNTAlIiB5PSI0MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ZT1UmYXBvcztyZTwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjYwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC43IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JTlZJVEVEPC90ZXh0Pjwvc3ZnPg==',
+    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjRkYTY7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNhODdhZmY7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY4OGZmO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iNTAlIiB5PSI0MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ZT1UmIzM5O1JFPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iODAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPklOVklURUQ8L3RleHQ+PC9zdmc+',
     gradient: { primary: '#ff4da6', secondary: '#a87aff', accent: '#6688ff' }
 };
 
@@ -266,7 +266,7 @@ const EventCreator = () => {
             <canvas ref={canvasRef} className="hidden" />
 
             <header className="relative z-10 px-6 py-6 flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-white/90" style={{ fontFamily: 'Georgia, serif' }}>
+                <h1 className="text-2xl font-bold text-white/90">
                     let's hang
                 </h1>
                 <nav className="hidden md:flex gap-8 text-white/80">
@@ -316,7 +316,7 @@ const EventCreator = () => {
                     </div>
 
                     <div className="space-y-6">
-                        <h2 className="text-5xl font-bold text-white mb-8" style={{ fontFamily: 'Georgia, serif' }}>
+                        <h2 className="text-5xl font-bold text-white mb-8">
                             Name your event
                         </h2>
 
@@ -389,21 +389,21 @@ const EventCreator = () => {
                         />
 
                         <div className="flex flex-wrap gap-3">
-                            <button className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
+                            <button className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
                                 <Users size={18} />
                                 Capacity
                             </button>
-                            <button className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
+                            <button className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
                                 <ImageIcon size={18} />
                                 Photo gallery
                             </button>
-                            <button className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
+                            <button className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
                                 <Link size={18} />
                                 Links
                             </button>
                             <button
                                 onClick={() => setShowMore(!showMore)}
-                                className="px-6 py-3 text-white/70 hover:text-white transition-all"
+                                className="px-5 py-2.5 text-white/70 hover:text-white transition-all"
                             >
                                 {showMore ? 'Show less' : 'Show more'}
                             </button>
