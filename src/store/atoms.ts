@@ -1,33 +1,50 @@
 import { atom } from 'recoil';
-import type { User, Task } from '../types';
+import type { Event, CustomModule, EventDraft } from '../types';
 
-export const usersState = atom<User[]>({
-  key: 'usersState',
+// Events State
+export const eventsState = atom<Event[]>({
+  key: 'eventsState',
   default: [],
 });
 
-export const tasksState = atom<Task[]>({
-  key: 'tasksState',
+// Draft Events State (events that are being created but not yet live)
+export const draftEventsState = atom<EventDraft[]>({
+  key: 'draftEventsState',
   default: [],
 });
 
+// Custom Modules State
+export const customModulesState = atom<CustomModule[]>({
+  key: 'customModulesState',
+  default: [],
+});
+
+// Current Event being edited
+export const currentEventState = atom<EventDraft | null>({
+  key: 'currentEventState',
+  default: null,
+});
+
+// Loading State
 export const loadingState = atom<boolean>({
   key: 'loadingState',
   default: false,
 });
 
+// Error State
 export const errorState = atom<string | null>({
   key: 'errorState',
   default: null,
 });
 
-// Combined database state for the useDatabase hook
-export const databaseState = atom({
-  key: 'databaseState',
+// Auto-save State
+export const autoSaveState = atom<{
+  lastSaved: string | null;
+  isSaving: boolean;
+}>({
+  key: 'autoSaveState',
   default: {
-    users: [] as User[],
-    tasks: [] as Task[],
-    loading: false,
-    error: null as string | null,
+    lastSaved: null,
+    isSaving: false,
   },
 });

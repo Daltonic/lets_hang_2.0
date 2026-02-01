@@ -1,5 +1,7 @@
-import { useState, useRef } from 'react';
-import { MapPin, DollarSign, Calendar, Users, Image as ImageIcon, Link, MessageSquare, Lock, ArrowRight, Grid2x2, Play, Sparkles } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { MapPin, DollarSign, Calendar, Users, Image as ImageIcon, Link, MessageSquare, Lock, ArrowRight, Grid2x2, Play, X, Save, Sparkles } from 'lucide-react';
+import { useDatabase } from '../hooks/useDatabase';
+import type { EventDraft } from '../types';
 
 interface GradientColors {
     primary: string;
@@ -13,17 +15,88 @@ const defaultImage = {
 };
 
 const EventCreator = () => {
+    const {
+        currentEvent,
+        saveDraft,
+        loadDraftByPhone,
+        publishDraft,
+        goLive,
+        autoSave,
+        addCustomModule,
+        getEventModules,
+        deleteCustomModule,
+    } = useDatabase();
+
     const [gradient, setGradient] = useState<GradientColors>(defaultImage.gradient);
     const [customImage, setCustomImage] = useState<string | null>(null);
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [eventName, setEventName] = useState('');
     const [dateTime, setDateTime] = useState('');
     const [location, setLocation] = useState('');
     const [costPerPerson, setCostPerPerson] = useState('');
     const [description, setDescription] = useState('');
     const [showMore, setShowMore] = useState(false);
+    const [isPhoneLocked, setIsPhoneLocked] = useState(false);
+    const [showModuleCreator, setShowModuleCreator] = useState(false);
+    const [newModuleName, setNewModuleName] = useState('');
+    const [newModuleDescription, setNewModuleDescription] = useState('');
+    const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Load draft when phone number is entered
+    useEffect(() => {
+        if (phoneNumber.length >= 10 && !hasLoadedDraft) {
+            loadDraftByPhone(phoneNumber).then((draft) => {
+                if (draft) {
+                    setEventName(draft.name || '');
+                    setDateTime(draft.dateTime || '');
+                    setLocation(draft.location || '');
+                    setCostPerPerson(draft.costPerPerson || '');
+                    setDescription(draft.description || '');
+                    if (draft.imageUrl) {
+                        setCustomImage(draft.imageUrl);
+                    }
+                    if (draft.gradient) {
+                        setGradient(draft.gradient);
+                    }
+                    setIsPhoneLocked(true);
+                    setHasLoadedDraft(true);
+                }
+            });
+        }
+    }, [phoneNumber, loadDraftByPhone, hasLoadedDraft]);
+
+    // Auto-save draft when data changes
+    useEffect(() => {
+        if (!phoneNumber || phoneNumber.length < 10) return;
+
+        if (autoSaveTimerRef.current) {
+            clearTimeout(autoSaveTimerRef.current);
+        }
+
+        autoSaveTimerRef.current = setTimeout(() => {
+            const draftData: Partial<EventDraft> & { phoneNumber: string } = {
+                phoneNumber,
+                name: eventName,
+                dateTime,
+                location,
+                costPerPerson,
+                description,
+                imageUrl: customImage || defaultImage.url,
+                gradient,
+            };
+            saveDraft(draftData);
+        }, 2000);
+
+        return () => {
+            if (autoSaveTimerRef.current) {
+                clearTimeout(autoSaveTimerRef.current);
+            }
+        };
+    }, [phoneNumber, eventName, dateTime, location, costPerPerson, description, customImage, gradient, saveDraft]);
 
     // Helper functions for color analysis
     const rgbToHsl = (r: number, g: number, b: number): [number, number, number] => {
@@ -235,6 +308,51 @@ const EventCreator = () => {
         reader.readAsDataURL(file);
     };
 
+    const handlePhoneNumberSubmit = () => {
+        if (phoneNumber.length >= 10) {
+            setIsPhoneLocked(true);
+        }
+    };
+
+    const handleGoLive = async () => {
+        if (!currentEvent?.id) {
+            alert('Please save your draft first by entering your phone number');
+            return;
+        }
+
+        try {
+            const newEvent = await publishDraft(currentEvent.id);
+            if (newEvent) {
+                await goLive(newEvent.id);
+                alert('Event is now live! 🎉');
+            }
+        } catch {
+            alert('Failed to go live. Please try again.');
+        }
+    };
+
+    const handleAddModule = async () => {
+        if (!currentEvent?.id || !newModuleName) return;
+
+        try {
+            await addCustomModule({
+                eventId: currentEvent.id,
+                name: newModuleName,
+                description: newModuleDescription,
+                icon: 'Sparkles',
+                code: '// Custom module code goes here',
+                order: getEventModules(currentEvent.id).length,
+            });
+            setNewModuleName('');
+            setNewModuleDescription('');
+            setShowModuleCreator(false);
+        } catch {
+            alert('Failed to add module');
+        }
+    };
+
+    const modules = currentEvent ? getEventModules(currentEvent.id) : [];
+
     return (
         <div
             className="min-h-screen transition-all duration-700 ease-in-out relative overflow-hidden"
@@ -242,6 +360,7 @@ const EventCreator = () => {
                 background: `linear-gradient(135deg, ${gradient.primary} 0%, ${gradient.secondary} 50%, ${gradient.accent} 100%)`
             }}
         >
+            {/* Animated Background Orbs */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
                 <div
                     className="absolute w-96 h-96 rounded-full blur-3xl opacity-20 animate-float"
@@ -265,6 +384,7 @@ const EventCreator = () => {
 
             <canvas ref={canvasRef} className="hidden" />
 
+            {/* Header */}
             <header className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between">
                 <div className="flex items-center gap-4 sm:gap-8">
                     <h1 className="text-xl sm:text-2xl font-bold text-white/90">
@@ -281,8 +401,10 @@ const EventCreator = () => {
                 </button>
             </header>
 
+            {/* Main Content */}
             <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12">
                 <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 items-start">
+                    {/* Left Column - Image */}
                     <div className="space-y-4 sm:space-y-6">
                         <div className="relative group">
                             <div className="aspect-square rounded-2xl sm:rounded-3xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 shadow-2xl">
@@ -317,11 +439,27 @@ const EventCreator = () => {
                         />
                     </div>
 
+                    {/* Right Column - Form */}
                     <div className="space-y-4 sm:space-y-6">
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 lg:mb-8">
                             Name your event
                         </h2>
 
+                        {/* Auto-save indicator */}
+                        {autoSave.isSaving && (
+                            <div className="text-white/70 text-sm flex items-center gap-2">
+                                <Save size={16} className="animate-pulse" />
+                                Saving draft...
+                            </div>
+                        )}
+                        {autoSave.lastSaved && !autoSave.isSaving && (
+                            <div className="text-white/70 text-sm flex items-center gap-2">
+                                <Save size={16} />
+                                Saved {new Date(autoSave.lastSaved).toLocaleTimeString()}
+                            </div>
+                        )}
+
+                        {/* Phone Number Input */}
                         <div className="relative bg-black/10 backdrop-blur-sm rounded-xl sm:rounded-2xl">
                             <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2">
                                 <Lock size={18} className="sm:w-5 sm:h-5 text-gray-300" />
@@ -331,13 +469,20 @@ const EventCreator = () => {
                                 placeholder="Enter phone number to save the draft"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
-                                className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 bg-black/10 backdrop-blur-sm rounded-xl sm:rounded-2xl text-white placeholder-white/50 border border-white/20 focus:outline-none focus:border-white/40 transition-all text-sm sm:text-base"
+                                disabled={isPhoneLocked}
+                                className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 bg-black/10 backdrop-blur-sm rounded-xl sm:rounded-2xl text-white placeholder-white/50 border border-white/20 focus:outline-none focus:border-white/40 transition-all text-sm sm:text-base disabled:opacity-50"
                             />
-                            <button className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 hover:bg-white/20 bg-white/10 rounded-lg transition-all">
-                                <ArrowRight size={18} className="sm:w-5 sm:h-5 text-white" />
-                            </button>
+                            {!isPhoneLocked && (
+                                <button
+                                    onClick={handlePhoneNumberSubmit}
+                                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 hover:bg-white/20 bg-white/10 rounded-lg transition-all"
+                                >
+                                    <ArrowRight size={18} className="sm:w-5 sm:h-5 text-white" />
+                                </button>
+                            )}
                         </div>
 
+                        {/* Event Details Card */}
                         <div className="bg-black/20 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-3 sm:space-y-4 bg-black/30 backdrop-blur-sm border border-white/20 focus:border-white/40">
                             <div className="flex items-center gap-3 text-white/90">
                                 <Calendar size={18} className="sm:w-5 sm:h-5 text-white/60 flex-shrink-0" />
@@ -377,6 +522,7 @@ const EventCreator = () => {
                             </div>
                         </div>
 
+                        {/* Description */}
                         <textarea
                             placeholder="Describe your event"
                             value={description}
@@ -385,6 +531,7 @@ const EventCreator = () => {
                             rows={4}
                         />
 
+                        {/* Quick Add Modules */}
                         <div className="flex flex-wrap gap-2 sm:gap-3">
                             <button className="px-4 sm:px-5 py-2 sm:py-2.5 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-1.5 sm:gap-2 shadow-lg text-sm sm:text-base">
                                 <Users size={16} className="sm:w-[18px] sm:h-[18px]" />
@@ -406,6 +553,7 @@ const EventCreator = () => {
                             </button>
                         </div>
 
+                        {/* Customize Section */}
                         <div className="bg-gradient-to-br from-black/40 via-black/30 to-black/40 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/20 relative overflow-hidden shadow-2xl">
                             <div className="absolute top-4 sm:top-8 left-4 sm:left-8 text-white/25 z-0">
                                 <MessageSquare size={24} className="sm:w-8 sm:h-8" strokeWidth={1.5} />
@@ -431,20 +579,88 @@ const EventCreator = () => {
                                     <p className="text-white/40 text-xs sm:text-sm font-bold tracking-widest">RSVP</p>
                                 </div>
 
-                                <button
-                                    className="w-full py-3 sm:py-4 bg-gradient-to-r from-white/90 to-white/70 rounded-xl sm:rounded-2xl text-white hover:from-white hover:to-white/90 transition-all flex items-center justify-center gap-2 relative z-20 shadow-lg border border-white/50 backdrop-blur-sm text-sm sm:text-base"
-                                    style={{
-                                        background: `linear-gradient(135deg, ${gradient.primary} 0%, ${gradient.secondary} 50%, ${gradient.accent} 100%)`
-                                    }}
-                                >
-                                    <Sparkles size={18} className="sm:w-5 sm:h-5 text-yellow-200" />
-                                    Customize
-                                </button>
+                                {/* Display existing modules */}
+                                {modules.length > 0 && (
+                                    <div className="space-y-2">
+                                        {modules.map((module) => (
+                                            <div
+                                                key={module.id}
+                                                className="flex items-center justify-between bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20"
+                                            >
+                                                <div className="text-left flex-1">
+                                                    <p className="text-white font-semibold text-sm">{module.name}</p>
+                                                    {module.description && (
+                                                        <p className="text-white/60 text-xs">{module.description}</p>
+                                                    )}
+                                                </div>
+                                                <button
+                                                    onClick={() => deleteCustomModule(module.id)}
+                                                    className="p-1 hover:bg-white/20 rounded transition-all"
+                                                >
+                                                    <X size={16} className="text-white/70" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Module creator */}
+                                {showModuleCreator ? (
+                                    <div className="space-y-3 bg-white/5 p-4 rounded-xl">
+                                        <input
+                                            type="text"
+                                            placeholder="Module name"
+                                            value={newModuleName}
+                                            onChange={(e) => setNewModuleName(e.target.value)}
+                                            className="w-full px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg text-white placeholder-white/50 border border-white/20 focus:outline-none focus:border-white/40 text-sm"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Description (optional)"
+                                            value={newModuleDescription}
+                                            onChange={(e) => setNewModuleDescription(e.target.value)}
+                                            className="w-full px-3 py-2 bg-white/10 backdrop-blur-sm rounded-lg text-white placeholder-white/50 border border-white/20 focus:outline-none focus:border-white/40 text-sm"
+                                        />
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={handleAddModule}
+                                                className="flex-1 py-2 bg-white/20 backdrop-blur-sm rounded-lg text-white hover:bg-white/30 transition-all text-sm"
+                                            >
+                                                Add Module
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    setShowModuleCreator(false);
+                                                    setNewModuleName('');
+                                                    setNewModuleDescription('');
+                                                }}
+                                                className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-lg text-white/70 hover:bg-white/20 transition-all text-sm"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <button
+                                        onClick={() => setShowModuleCreator(true)}
+                                        disabled={!currentEvent}
+                                        className="w-full py-3 sm:py-4 bg-gradient-to-r from-white/90 to-white/70 rounded-xl sm:rounded-2xl text-white hover:from-white hover:to-white/90 transition-all flex items-center justify-center gap-2 relative z-20 shadow-lg border border-white/50 backdrop-blur-sm text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                                        style={{
+                                            background: `linear-gradient(135deg, ${gradient.primary} 0%, ${gradient.secondary} 50%, ${gradient.accent} 100%)`
+                                        }}
+                                    >
+                                        <Sparkles size={18} className="sm:w-5 sm:h-5 text-yellow-200" />
+                                        Customize
+                                    </button>
+                                )}
                             </div>
                         </div>
 
+                        {/* Go Live Button */}
                         <button
-                            className="w-full py-3 sm:py-4 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl text-white hover:bg-white/25 transition-all flex items-center justify-center gap-2 shadow-lg border border-white/30 text-sm sm:text-base"
+                            onClick={handleGoLive}
+                            disabled={!currentEvent || !phoneNumber}
+                            className="w-full py-3 sm:py-4 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl text-white hover:bg-white/25 transition-all flex items-center justify-center gap-2 shadow-lg border border-white/30 text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <Play size={20} className="sm:w-6 sm:h-6 text-green-400 fill-green-400" />
                             Go live
