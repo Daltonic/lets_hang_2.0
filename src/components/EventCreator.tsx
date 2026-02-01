@@ -265,27 +265,27 @@ const EventCreator = () => {
 
             <canvas ref={canvasRef} className="hidden" />
 
-            <header className="relative z-10 px-6 py-6 flex items-center justify-between">
-                <div className="flex items-center gap-8">
-                    <h1 className="text-2xl font-bold text-white/90">
+            <header className="relative z-10 px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between">
+                <div className="flex items-center gap-4 sm:gap-8">
+                    <h1 className="text-xl sm:text-2xl font-bold text-white/90">
                         let's hang
                     </h1>
-                    <nav className="hidden md:flex gap-8 text-white/80">
+                    <nav className="hidden md:flex gap-6 lg:gap-8 text-white/80 text-sm lg:text-base">
                         <button className="hover:text-white transition-colors">Home</button>
                         <button className="hover:text-white transition-colors">People</button>
                         <button className="hover:text-white transition-colors">Search</button>
                     </nav>
                 </div>
-                <button className="px-6 py-2 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all shadow-lg">
+                <button className="px-4 sm:px-6 py-1.5 sm:py-2 text-sm sm:text-base bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all shadow-lg">
                     Sign in
                 </button>
             </header>
 
-            <main className="relative z-10 max-w-7xl mx-auto px-6 py-12">
-                <div className="grid lg:grid-cols-2 gap-8 items-start">
-                    <div className="space-y-6">
+            <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-12">
+                <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 items-start">
+                    <div className="space-y-4 sm:space-y-6">
                         <div className="relative group">
-                            <div className="aspect-square rounded-3xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 shadow-2xl">
+                            <div className="aspect-square rounded-2xl sm:rounded-3xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 shadow-2xl">
                                 <img
                                     src={customImage || defaultImage.url}
                                     alt="Event preview"
@@ -293,18 +293,18 @@ const EventCreator = () => {
                                 />
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="absolute bottom-4 right-4 p-3 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 transition-all border border-white/40 shadow-lg"
+                                    className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 p-2.5 sm:p-3 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 transition-all border border-white/40 shadow-lg"
                                 >
-                                    <ImageIcon size={20} className="text-pink-300" />
+                                    <ImageIcon size={18} className="sm:w-5 sm:h-5 text-pink-300" />
                                 </button>
                             </div>
                         </div>
 
                         <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full py-4 bg-white/20 backdrop-blur-md rounded-2xl text-white hover:bg-white/25 transition-all flex items-center justify-center gap-2 shadow-lg border border-white/30"
+                            className="w-full py-3 sm:py-4 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl text-white hover:bg-white/25 transition-all flex items-center justify-center gap-2 shadow-lg border border-white/30 text-sm sm:text-base"
                         >
-                            <ImageIcon size={20} className="text-lime-300" />
+                            <ImageIcon size={18} className="sm:w-5 sm:h-5 text-lime-300" />
                             Change background
                         </button>
 
@@ -317,62 +317,62 @@ const EventCreator = () => {
                         />
                     </div>
 
-                    <div className="space-y-6">
-                        <h2 className="text-5xl font-bold text-white mb-8">
+                    <div className="space-y-4 sm:space-y-6">
+                        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6 lg:mb-8">
                             Name your event
                         </h2>
 
-                        <div className="relative bg-black/10 backdrop-blur-sm rounded-2xl">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2">
-                                <Lock size={20} className="text-gray-300" />
+                        <div className="relative bg-black/10 backdrop-blur-sm rounded-xl sm:rounded-2xl">
+                            <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2">
+                                <Lock size={18} className="sm:w-5 sm:h-5 text-gray-300" />
                             </div>
                             <input
                                 type="tel"
                                 placeholder="Enter phone number to save the draft"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
-                                className="w-full pl-12 pr-12 py-4 bg-black/10 backdrop-blur-sm rounded-2xl text-white placeholder-white/50 border border-white/20 focus:outline-none focus:border-white/40 transition-all"
+                                className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 bg-black/10 backdrop-blur-sm rounded-xl sm:rounded-2xl text-white placeholder-white/50 border border-white/20 focus:outline-none focus:border-white/40 transition-all text-sm sm:text-base"
                             />
-                            <button className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/20 bg-white/10 rounded-lg transition-all">
-                                <ArrowRight size={20} className="text-white" />
+                            <button className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 hover:bg-white/20 bg-white/10 rounded-lg transition-all">
+                                <ArrowRight size={18} className="sm:w-5 sm:h-5 text-white" />
                             </button>
                         </div>
 
-                        <div className="bg-black/20 backdrop-blur-sm rounded-3xl p-6 space-y-4 bg-black/30 backdrop-blur-sm border border-white/20 focus:border-white/40 ">
+                        <div className="bg-black/20 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-3 sm:space-y-4 bg-black/30 backdrop-blur-sm border border-white/20 focus:border-white/40">
                             <div className="flex items-center gap-3 text-white/90">
-                                <Calendar size={20} className="text-white/60" />
+                                <Calendar size={18} className="sm:w-5 sm:h-5 text-white/60 flex-shrink-0" />
                                 <input
                                     type="text"
                                     placeholder="Date and time"
                                     value={dateTime}
                                     onChange={(e) => setDateTime(e.target.value)}
-                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50"
+                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50 text-sm sm:text-base"
                                 />
                             </div>
 
                             <div className="h-px bg-white/10" />
 
                             <div className="flex items-center gap-3 text-white/90">
-                                <MapPin size={20} className="text-red-400" />
+                                <MapPin size={18} className="sm:w-5 sm:h-5 text-red-400 flex-shrink-0" />
                                 <input
                                     type="text"
                                     placeholder="Location"
                                     value={location}
                                     onChange={(e) => setLocation(e.target.value)}
-                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50"
+                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50 text-sm sm:text-base"
                                 />
                             </div>
 
                             <div className="h-px bg-white/10" />
 
                             <div className="flex items-center gap-3 text-white/90">
-                                <DollarSign size={20} className="text-yellow-300" />
+                                <DollarSign size={18} className="sm:w-5 sm:h-5 text-yellow-300 flex-shrink-0" />
                                 <input
                                     type="text"
                                     placeholder="Cost per person"
                                     value={costPerPerson}
                                     onChange={(e) => setCostPerPerson(e.target.value)}
-                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50"
+                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50 text-sm sm:text-base"
                                 />
                             </div>
                         </div>
@@ -381,72 +381,72 @@ const EventCreator = () => {
                             placeholder="Describe your event"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full px-6 py-4 bg-black/30 backdrop-blur-sm rounded-2xl text-white placeholder-white/50 border border-white/20 focus:outline-none focus:border-white/40 transition-all resize-none"
+                            className="w-full px-4 sm:px-6 py-3 sm:py-4 bg-black/30 backdrop-blur-sm rounded-xl sm:rounded-2xl text-white placeholder-white/50 border border-white/20 focus:outline-none focus:border-white/40 transition-all resize-none text-sm sm:text-base"
                             rows={4}
                         />
 
-                        <div className="flex flex-wrap gap-3">
-                            <button className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
-                                <Users size={18} />
+                        <div className="flex flex-wrap gap-2 sm:gap-3">
+                            <button className="px-4 sm:px-5 py-2 sm:py-2.5 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-1.5 sm:gap-2 shadow-lg text-sm sm:text-base">
+                                <Users size={16} className="sm:w-[18px] sm:h-[18px]" />
                                 Capacity
                             </button>
-                            <button className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
-                                <ImageIcon size={18} />
+                            <button className="px-4 sm:px-5 py-2 sm:py-2.5 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-1.5 sm:gap-2 shadow-lg text-sm sm:text-base">
+                                <ImageIcon size={16} className="sm:w-[18px] sm:h-[18px]" />
                                 Photo gallery
                             </button>
-                            <button className="px-5 py-2.5 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
-                                <Link size={18} />
+                            <button className="px-4 sm:px-5 py-2 sm:py-2.5 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-1.5 sm:gap-2 shadow-lg text-sm sm:text-base">
+                                <Link size={16} className="sm:w-[18px] sm:h-[18px]" />
                                 Links
                             </button>
                             <button
                                 onClick={() => setShowMore(!showMore)}
-                                className="px-5 py-2.5 text-white/70 hover:text-white transition-all"
+                                className="px-4 sm:px-5 py-2 sm:py-2.5 text-white/70 hover:text-white transition-all text-sm sm:text-base"
                             >
                                 {showMore ? 'Show less' : 'Show more'}
                             </button>
                         </div>
 
-                        <div className="bg-gradient-to-br from-black/40 via-black/30 to-black/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 relative overflow-hidden shadow-2xl">
-                            <div className="absolute top-8 left-8 text-white/25 z-0">
-                                <MessageSquare size={32} strokeWidth={1.5} className="text-gray-400" />
+                        <div className="bg-gradient-to-br from-black/40 via-black/30 to-black/40 backdrop-blur-xl rounded-2xl sm:rounded-3xl p-6 sm:p-8 border border-white/20 relative overflow-hidden shadow-2xl">
+                            <div className="absolute top-4 sm:top-8 left-4 sm:left-8 text-white/25 z-0">
+                                <MessageSquare size={24} className="sm:w-8 sm:h-8" strokeWidth={1.5} />
                             </div>
-                            <div className="absolute top-8 right-8 text-white/25 z-0">
-                                <Link size={32} strokeWidth={1.5} className="text-cyan-400" />
+                            <div className="absolute top-4 sm:top-8 right-4 sm:right-8 text-white/25 z-0">
+                                <Link size={24} className="sm:w-8 sm:h-8 text-cyan-400" strokeWidth={1.5} />
                             </div>
-                            <div className="absolute bottom-8 left-10 text-white/25 z-0">
-                                <Users size={32} strokeWidth={1.5} className="text-orange-400" />
+                            <div className="absolute bottom-4 sm:bottom-8 left-4 sm:left-10 text-white/25 z-0">
+                                <Users size={24} className="sm:w-8 sm:h-8 text-orange-400" strokeWidth={1.5} />
                             </div>
-                            <div className="absolute bottom-8 right-10 text-white/25 z-0">
-                                <ImageIcon size={32} strokeWidth={1.5} className="text-purple-400" />
+                            <div className="absolute bottom-4 sm:bottom-8 right-4 sm:right-10 text-white/25 z-0">
+                                <ImageIcon size={24} className="sm:w-8 sm:h-8 text-purple-400" strokeWidth={1.5} />
                             </div>
-                            <div className="absolute top-1/2 left-6 -translate-y-1/2 text-white/25 z-0">
-                                <Grid2x2 size={32} strokeWidth={1.5} className="text-gray-400" />
+                            <div className="absolute top-1/2 left-3 sm:left-6 -translate-y-1/2 text-white/25 z-0">
+                                <Grid2x2 size={24} className="sm:w-8 sm:h-8" strokeWidth={1.5} />
                             </div>
 
-                            <div className="relative z-10 text-center space-y-6">
+                            <div className="relative z-10 text-center space-y-4 sm:space-y-6">
                                 <div>
-                                    <h3 className="text-2xl font-bold text-white mb-2">
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-1 sm:mb-2">
                                         Customize your event your way
                                     </h3>
-                                    <p className="text-white/40 text-sm font-bold tracking-widest">RSVP</p>
+                                    <p className="text-white/40 text-xs sm:text-sm font-bold tracking-widest">RSVP</p>
                                 </div>
 
                                 <button
-                                    className="w-full py-4 bg-gradient-to-r from-white/90 to-white/70 rounded-2xl text-white hover:from-white hover:to-white/90 transition-all flex items-center justify-center gap-2 relative z-20 shadow-lg border border-white/50 backdrop-blur-sm"
+                                    className="w-full py-3 sm:py-4 bg-gradient-to-r from-white/90 to-white/70 rounded-xl sm:rounded-2xl text-white hover:from-white hover:to-white/90 transition-all flex items-center justify-center gap-2 relative z-20 shadow-lg border border-white/50 backdrop-blur-sm text-sm sm:text-base"
                                     style={{
                                         background: `linear-gradient(135deg, ${gradient.primary} 0%, ${gradient.secondary} 50%, ${gradient.accent} 100%)`
                                     }}
                                 >
-                                    <Sparkles size={20} className="text-yellow-200" />
+                                    <Sparkles size={18} className="sm:w-5 sm:h-5 text-yellow-200" />
                                     Customize
                                 </button>
                             </div>
                         </div>
 
                         <button
-                            className="w-full py-4 bg-white/20 backdrop-blur-md rounded-2xl text-white hover:bg-white/25 transition-all flex items-center justify-center gap-2 shadow-lg border border-white/30"
+                            className="w-full py-3 sm:py-4 bg-white/20 backdrop-blur-md rounded-xl sm:rounded-2xl text-white hover:bg-white/25 transition-all flex items-center justify-center gap-2 shadow-lg border border-white/30 text-sm sm:text-base"
                         >
-                            <Play size={24} className="text-green-400 fill-green-400" />
+                            <Play size={20} className="sm:w-6 sm:h-6 text-green-400 fill-green-400" />
                             Go live
                         </button>
                     </div>
