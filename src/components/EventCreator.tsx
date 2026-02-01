@@ -7,32 +7,13 @@ interface GradientColors {
     accent: string;
 }
 
-const defaultImages = [
-    {
-        id: 1,
-        url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjRkYTY7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNhODdhZmY7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY4OGZmO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iNTAlIiB5PSI0MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ZT1UmYXBvcztyZTwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjYwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC43IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JTlZJVEVEPC90ZXh0Pjwvc3ZnPg==',
-        gradient: { primary: '#ff4da6', secondary: '#a87aff', accent: '#6688ff' }
-    },
-    {
-        id: 2,
-        url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cmFkaWFsR3JhZGllbnQgaWQ9ImciPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjYyYjg7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZiNGQ0O3N0b3Atb3BhY2l0eToxIiAvPjwvcmFkaWFsR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJ1cmwoI2cpIi8+PGNpcmNsZSBjeD0iMjAwIiBjeT0iMTUwIiByPSIzMCIgZmlsbD0iI2NjMDAzMyIvPjxwYXRoIGQ9Ik0xNTAgMjUwIFEgMjAwIDM1MCAyNTAgMjUwIiBzdHJva2U9IiNjYzAwMzMiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPjxwb2x5Z29uIHBvaW50cz0iMjAwLDE4MCAxNzAsMjMwIDIzMCwyMzAiIGZpbGw9IiNmZmIzZDkiLz48cGF0aCBkPSJNMTUwIDMwMCBRIDIwMCAzMjAgMjUwIDMwMCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjMiIGZpbGw9Im5vbmUiLz48L3N2Zz4=',
-        gradient: { primary: '#ff62b8', secondary: '#ffb4d4', accent: '#ff8ac9' }
-    },
-    {
-        id: 3,
-        url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjk5NWU7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojZmZkNzZlO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJ1cmwoI2cpIi8+PGNpcmNsZSBjeD0iMjAwIiBjeT0iMTUwIiByPSI1MCIgZmlsbD0iI2ZmZDcwMCIvPjxwYXRoIGQ9Ik0xMDAgMzAwIEwgMzAwIDMwMCIgc3Ryb2tlPSIjZmY2NjAwIiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjIyMCIgcj0iMTUiIGZpbGw9IiNmZmE1MDAiLz48Y2lyY2xlIGN4PSIyNTAiIGN5PSIyMjAiIHI9IjE1IiBmaWxsPSIjZmZhNTAwIi8+PC9zdmc+',
-        gradient: { primary: '#ff995e', secondary: '#ffd76e', accent: '#ffb847' }
-    },
-    {
-        id: 4,
-        url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM0ZGFhZmY7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojN2E4OGZmO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJ1cmwoI2cpIi8+PHBhdGggZD0iTTEwMCAxNTAgTCAyMDAgNTAgTCAzMDAgMTUwIEwgMjAwIDI1MCBaIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjMiLz48Y2lyY2xlIGN4PSIyMDAiIGN5PSIzMDAiIHI9IjQwIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjQiLz48L3N2Zz4=',
-        gradient: { primary: '#4daeff', secondary: '#7a88ff', accent: '#639bff' }
-    }
-];
+const defaultImage = {
+    url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjRkYTY7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNhODdhZmY7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY4OGZmO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iNTAlIiB5PSI0MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ZT1UmYXBvcztyZTwvdGV4dD48dGV4dCB4PSI1MCUiIHk9IjYwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjgwIiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC43IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5JTlZJVEVEPC90ZXh0Pjwvc3ZnPg==',
+    gradient: { primary: '#ff4da6', secondary: '#a87aff', accent: '#6688ff' }
+};
 
 export const EventCreator = () => {
-    const [selectedImage, setSelectedImage] = useState(defaultImages[0]);
-    const [gradient, setGradient] = useState<GradientColors>(defaultImages[0].gradient);
+    const [gradient, setGradient] = useState<GradientColors>(defaultImage.gradient);
     const [customImage, setCustomImage] = useState<string | null>(null);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [dateTime, setDateTime] = useState('');
@@ -44,7 +25,6 @@ export const EventCreator = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    // Extract dominant colors from image
     const extractGradient = (imageUrl: string): Promise<GradientColors> => {
         return new Promise((resolve) => {
             const img = new Image();
@@ -90,11 +70,6 @@ export const EventCreator = () => {
         });
     };
 
-    const handleImageSelect = async (image: typeof defaultImages[0]) => {
-        setSelectedImage(image);
-        setGradient(image.gradient);
-    };
-
     const handleCustomImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -107,7 +82,6 @@ export const EventCreator = () => {
             try {
                 const extractedGradient = await extractGradient(imageUrl);
                 setGradient(extractedGradient);
-                setSelectedImage({ id: 999, url: imageUrl, gradient: extractedGradient });
             } catch (error) {
                 console.error('Error extracting gradient:', error);
             }
@@ -156,7 +130,7 @@ export const EventCreator = () => {
                     <button className="hover:text-white transition-colors">People</button>
                     <button className="hover:text-white transition-colors">Search</button>
                 </nav>
-                <button className="px-6 py-2 bg-white/20 backdrop-blur-sm rounded-full text-white border border-white/30 hover:bg-white/30 transition-all">
+                <button className="px-6 py-2 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all shadow-lg">
                     Sign in
                 </button>
             </header>
@@ -170,13 +144,13 @@ export const EventCreator = () => {
                         <div className="relative group">
                             <div className="aspect-square rounded-3xl overflow-hidden bg-white/10 backdrop-blur-sm border border-white/20 shadow-2xl">
                                 <img
-                                    src={customImage || selectedImage.url}
+                                    src={customImage || defaultImage.url}
                                     alt="Event preview"
                                     className="w-full h-full object-cover"
                                 />
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="absolute bottom-4 right-4 p-3 bg-white/20 backdrop-blur-sm rounded-full text-white hover:bg-white/30 transition-all border border-white/30"
+                                    className="absolute bottom-4 right-4 p-3 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/30 transition-all border border-white/40 shadow-lg"
                                 >
                                     <ImageIcon size={20} />
                                 </button>
@@ -185,7 +159,7 @@ export const EventCreator = () => {
 
                         <button
                             onClick={() => fileInputRef.current?.click()}
-                            className="w-full py-4 bg-white/10 backdrop-blur-sm rounded-2xl text-white border border-white/30 hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+                            className="w-full py-4 bg-white/20 backdrop-blur-md rounded-2xl text-white hover:bg-white/25 transition-all flex items-center justify-center gap-2 shadow-lg border border-white/30"
                         >
                             <ImageIcon size={20} />
                             Change background
@@ -198,22 +172,6 @@ export const EventCreator = () => {
                             onChange={handleCustomImageUpload}
                             className="hidden"
                         />
-
-                        {/* Preset Images */}
-                        <div className="grid grid-cols-4 gap-3">
-                            {defaultImages.map((image) => (
-                                <button
-                                    key={image.id}
-                                    onClick={() => handleImageSelect(image)}
-                                    className={`aspect-square rounded-xl overflow-hidden border-2 transition-all hover:scale-105 ${selectedImage.id === image.id
-                                        ? 'border-white shadow-lg'
-                                        : 'border-white/30'
-                                        }`}
-                                >
-                                    <img src={image.url} alt="" className="w-full h-full object-cover" />
-                                </button>
-                            ))}
-                        </div>
                     </div>
 
                     {/* Right Column - Form */}
@@ -222,14 +180,20 @@ export const EventCreator = () => {
                             Name your event
                         </h2>
 
-                        {/* Phone Input */}
-                        <div className="relative">
+                        {/* Phone Input with Lock Icon */}
+                        <div className="relative bg-black/20 backdrop-blur-sm rounded-2xl">
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/60">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <rect x="5" y="11" width="14" height="10" rx="2" />
+                                    <path d="M7 11V7a5 5 0 0110 0v4" />
+                                </svg>
+                            </div>
                             <input
                                 type="tel"
                                 placeholder="Enter phone number to save the draft"
                                 value={phoneNumber}
                                 onChange={(e) => setPhoneNumber(e.target.value)}
-                                className="w-full px-4 py-4 bg-white/10 backdrop-blur-sm rounded-2xl text-white placeholder-white/60 border border-white/20 focus:border-white/40 focus:outline-none transition-all"
+                                className="w-full pl-12 pr-12 py-4 bg-transparent rounded-2xl text-white placeholder-white/50 border-none focus:outline-none"
                             />
                             <button className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-white/10 rounded-lg transition-all">
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-white">
@@ -239,41 +203,41 @@ export const EventCreator = () => {
                         </div>
 
                         {/* Event Details Card */}
-                        <div className="bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/20 space-y-4">
+                        <div className="bg-black/20 backdrop-blur-sm rounded-3xl p-6 space-y-4">
                             <div className="flex items-center gap-3 text-white/90">
-                                <Calendar size={20} className="text-white/70" />
+                                <Calendar size={20} className="text-white/60" />
                                 <input
                                     type="text"
                                     placeholder="Date and time"
                                     value={dateTime}
                                     onChange={(e) => setDateTime(e.target.value)}
-                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/60"
+                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50"
                                 />
                             </div>
 
                             <div className="h-px bg-white/10" />
 
                             <div className="flex items-center gap-3 text-white/90">
-                                <MapPin size={20} className="text-white/70" />
+                                <MapPin size={20} className="text-white/60" />
                                 <input
                                     type="text"
                                     placeholder="Location"
                                     value={location}
                                     onChange={(e) => setLocation(e.target.value)}
-                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/60"
+                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50"
                                 />
                             </div>
 
                             <div className="h-px bg-white/10" />
 
                             <div className="flex items-center gap-3 text-white/90">
-                                <DollarSign size={20} className="text-white/70" />
+                                <DollarSign size={20} className="text-white/60" />
                                 <input
                                     type="text"
                                     placeholder="Cost per person"
                                     value={costPerPerson}
                                     onChange={(e) => setCostPerPerson(e.target.value)}
-                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/60"
+                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50"
                                 />
                             </div>
                         </div>
@@ -283,21 +247,21 @@ export const EventCreator = () => {
                             placeholder="Describe your event"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full px-6 py-4 bg-white/10 backdrop-blur-sm rounded-2xl text-white placeholder-white/60 border border-white/20 focus:border-white/40 focus:outline-none transition-all resize-none"
+                            className="w-full px-6 py-4 bg-black/20 backdrop-blur-sm rounded-2xl text-white placeholder-white/50 border-none focus:outline-none transition-all resize-none"
                             rows={4}
                         />
 
                         {/* Additional Options */}
                         <div className="flex flex-wrap gap-3">
-                            <button className="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/30 hover:bg-white/20 transition-all flex items-center gap-2">
+                            <button className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
                                 <Users size={18} />
                                 Capacity
                             </button>
-                            <button className="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/30 hover:bg-white/20 transition-all flex items-center gap-2">
+                            <button className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
                                 <ImageIcon size={18} />
                                 Photo gallery
                             </button>
-                            <button className="px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full text-white border border-white/30 hover:bg-white/20 transition-all flex items-center gap-2">
+                            <button className="px-6 py-3 bg-white/20 backdrop-blur-md rounded-full text-white border border-white/40 hover:bg-white/25 transition-all flex items-center gap-2 shadow-lg">
                                 <Link size={18} />
                                 Links
                             </button>
@@ -310,38 +274,41 @@ export const EventCreator = () => {
                         </div>
 
                         {/* Customize Section */}
-                        <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 relative overflow-hidden">
-                            <div className="absolute top-4 right-4 text-6xl text-white/10">
-                                <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
-                                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" />
+                        <div className="bg-gradient-to-br from-black/40 via-black/30 to-black/40 backdrop-blur-xl rounded-3xl p-8 border border-white/20 relative overflow-hidden shadow-2xl">
+                            {/* Decorative icons scattered around */}
+                            <div className="absolute top-8 left-8 text-white/25 z-0">
+                                <MessageSquare size={32} strokeWidth={1.5} />
+                            </div>
+                            <div className="absolute top-8 right-8 text-white/25 z-0">
+                                <Link size={32} strokeWidth={1.5} />
+                            </div>
+                            <div className="absolute bottom-8 left-10 text-white/25 z-0">
+                                <Users size={32} strokeWidth={1.5} />
+                            </div>
+                            <div className="absolute bottom-8 right-10 text-white/25 z-0">
+                                <ImageIcon size={32} strokeWidth={1.5} />
+                            </div>
+                            <div className="absolute top-1/2 left-6 -translate-y-1/2 text-white/25 z-0">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                    <rect x="3" y="3" width="7" height="7" />
+                                    <rect x="14" y="3" width="7" height="7" />
+                                    <rect x="3" y="14" width="7" height="7" />
+                                    <rect x="14" y="14" width="7" height="7" />
                                 </svg>
                             </div>
 
                             <div className="relative z-10 text-center space-y-6">
-                                <div className="flex justify-center gap-8 opacity-40">
-                                    <MessageSquare size={32} className="text-white" />
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" className="text-white">
-                                        <rect x="3" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" />
-                                        <rect x="14" y="3" width="7" height="7" stroke="currentColor" strokeWidth="2" />
-                                        <rect x="3" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" />
-                                        <rect x="14" y="14" width="7" height="7" stroke="currentColor" strokeWidth="2" />
-                                    </svg>
-                                    <Users size={32} className="text-white" />
-                                    <Link size={32} className="text-white" />
-                                    <ImageIcon size={32} className="text-white" />
-                                </div>
-
                                 <div>
                                     <h3 className="text-2xl font-bold text-white mb-2">
                                         Customize your event your way
                                     </h3>
-                                    <p className="text-white/60 text-sm">RSVP</p>
+                                    <p className="text-white/40 text-sm font-bold tracking-widest">RSVP</p>
                                 </div>
 
-                                <button className="w-full py-4 bg-white/20 backdrop-blur-sm rounded-2xl text-white border border-white/30 hover:bg-white/30 transition-all flex items-center justify-center gap-2">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <button className="w-full py-4 bg-white/20 backdrop-blur-md rounded-2xl text-white hover:bg-white/25 transition-all flex items-center justify-center gap-2 relative z-20 shadow-lg border border-white/30">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor" opacity="0.5" />
-                                        <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" strokeWidth="2" />
+                                        <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
                                     </svg>
                                     Customize
                                 </button>
@@ -359,6 +326,16 @@ export const EventCreator = () => {
                     </div>
                 </div>
             </main>
+
+            <style>{`
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px); }
+                    50% { transform: translateY(-20px); }
+                }
+                .animate-float {
+                    animation: float 6s ease-in-out infinite;
+                }
+            `}</style>
         </div>
     );
 };
