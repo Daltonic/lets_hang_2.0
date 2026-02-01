@@ -5,7 +5,7 @@ import { RecoilRoot } from 'recoil';
 // import { TasksList } from './components/TasksList';
 // import { TestComponent } from './components/TestComponent';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { EventCreator } from './components/EventCreator';
+import EventCreator from './components/EventCreator';
 
 function App() {
   return (
