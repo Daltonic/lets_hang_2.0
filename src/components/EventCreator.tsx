@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MapPin, DollarSign, Calendar, Users, Image as ImageIcon, Link, MessageSquare, Lock, ArrowRight, Grid2x2, Play, X, Save, Sparkles } from 'lucide-react';
+import { MapPin, DollarSign, Calendar, Users, Image as ImageIcon, Link, MessageSquare, Lock, ArrowRight, Grid2x2, Play, X, Save, Sparkles, AlertCircle, Clock } from 'lucide-react';
 import { useDatabase } from '../hooks/useDatabase';
 import type { EventDraft } from '../types';
 
@@ -9,9 +9,28 @@ interface GradientColors {
     accent: string;
 }
 
+interface ValidationErrors {
+    phoneNumber?: string;
+    eventName?: string;
+    dateTime?: string;
+    location?: string;
+    costPerPerson?: string;
+}
+
 const defaultImage = {
     url: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmZjRkYTY7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSI1MCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNhODdhZmY7c3RvcC1vcGFjaXR5OjEiIC8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojNjY4OGZmO3N0b3Atb3BhY2l0eToxIiAvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iNDAwIiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iNTAlIiB5PSI0MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5ZT1UmIzM5O1JFPC90ZXh0Pjx0ZXh0IHg9IjUwJSIgeT0iNjAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iODAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjciIHRleHQtYW5jaG9yPSJtaWRkbGUiPklOVklURUQ8L3RleHQ+PC9zdmc+',
     gradient: { primary: '#ff4da6', secondary: '#a87aff', accent: '#6688ff' }
+};
+
+// Error display component
+const ErrorMessage = ({ error }: { error?: string }) => {
+    if (!error) return null;
+    return (
+        <div className="flex items-center gap-1 text-red-300 text-xs mt-1">
+            <AlertCircle size={12} />
+            <span>{error}</span>
+        </div>
+    );
 };
 
 const EventCreator = () => {
@@ -41,15 +60,122 @@ const EventCreator = () => {
     const [newModuleName, setNewModuleName] = useState('');
     const [newModuleDescription, setNewModuleDescription] = useState('');
     const [hasLoadedDraft, setHasLoadedDraft] = useState(false);
+    const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+    const [focusedField, setFocusedField] = useState<string | null>(null);
+    const [showDatePicker, setShowDatePicker] = useState(false);
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [selectedTime, setSelectedTime] = useState<string>('');
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const autoSaveTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Validation functions
+    const validatePhoneNumber = (phone: string): string | undefined => {
+        const digitsOnly = phone.replace(/\D/g, '');
+        if (digitsOnly.length === 0) return undefined;
+        if (digitsOnly.length < 10) return 'Phone number must be at least 10 digits';
+        if (digitsOnly.length > 15) return 'Phone number is too long';
+        return undefined;
+    };
+
+    const validateEventName = (name: string): string | undefined => {
+        if (name.trim().length === 0) return undefined;
+        if (name.trim().length < 3) return 'Event name must be at least 3 characters';
+        if (name.length > 100) return 'Event name is too long (max 100 characters)';
+        return undefined;
+    };
+
+    const validateDateTime = (dt: string): string | undefined => {
+        if (dt.trim().length === 0) return undefined;
+        // Basic validation - you could enhance this with more specific date parsing
+        if (dt.trim().length < 5) return 'Please enter a valid date and time';
+        return undefined;
+    };
+
+    const validateLocation = (loc: string): string | undefined => {
+        if (loc.trim().length === 0) return undefined;
+        if (loc.trim().length < 3) return 'Location must be at least 3 characters';
+        if (loc.length > 200) return 'Location is too long (max 200 characters)';
+        return undefined;
+    };
+
+    const validateCost = (cost: string): string | undefined => {
+        if (cost.trim().length === 0) return undefined;
+        const numericValue = parseFloat(cost.replace(/[$,]/g, ''));
+        if (isNaN(numericValue)) return 'Please enter a valid cost';
+        if (numericValue < 0) return 'Cost cannot be negative';
+        if (numericValue > 1000000) return 'Cost is too high';
+        return undefined;
+    };
+
+    // Formatting functions
+    const formatPhoneNumber = (value: string): string => {
+        const digitsOnly = value.replace(/\D/g, '');
+        if (digitsOnly.length <= 3) return digitsOnly;
+        if (digitsOnly.length <= 6) return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3)}`;
+        if (digitsOnly.length <= 10) return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6)}`;
+        return `(${digitsOnly.slice(0, 3)}) ${digitsOnly.slice(3, 6)}-${digitsOnly.slice(6, 10)}`;
+    };
+
+    const formatCurrency = (value: string): string => {
+        // Remove all non-numeric characters except decimal point
+        const numericValue = value.replace(/[^\d.]/g, '');
+
+        // Handle empty or invalid input
+        if (!numericValue) return '';
+
+        // Parse the number
+        const num = parseFloat(numericValue);
+        if (isNaN(num)) return '';
+
+        // Format with commas and 2 decimal places
+        return '$' + num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
+
+    const handlePhoneChange = (value: string) => {
+        const formatted = formatPhoneNumber(value);
+        setPhoneNumber(formatted);
+
+        const error = validatePhoneNumber(formatted);
+        setValidationErrors(prev => ({ ...prev, phoneNumber: error }));
+    };
+
+    const handleEventNameChange = (value: string) => {
+        setEventName(value);
+
+        const error = validateEventName(value);
+        setValidationErrors(prev => ({ ...prev, eventName: error }));
+    };
+
+    const handleDateTimeChange = (value: string) => {
+        setDateTime(value);
+
+        const error = validateDateTime(value);
+        setValidationErrors(prev => ({ ...prev, dateTime: error }));
+    };
+
+    const handleLocationChange = (value: string) => {
+        setLocation(value);
+
+        const error = validateLocation(value);
+        setValidationErrors(prev => ({ ...prev, location: error }));
+    };
+
+    const handleCostChange = (value: string) => {
+        // Store the raw numeric value for internal use
+        const numericValue = value.replace(/[^\d.]/g, '');
+        setCostPerPerson(numericValue);
+
+        const error = validateCost(numericValue);
+        setValidationErrors(prev => ({ ...prev, costPerPerson: error }));
+    };
+
     // Load draft when phone number is entered
     useEffect(() => {
-        if (phoneNumber.length >= 10 && !hasLoadedDraft) {
-            loadDraftByPhone(phoneNumber).then((draft) => {
+        const digitsOnly = phoneNumber.replace(/\D/g, '');
+        if (digitsOnly.length >= 10 && !hasLoadedDraft) {
+            loadDraftByPhone(digitsOnly).then((draft) => {
                 if (draft) {
                     setEventName(draft.name || '');
                     setDateTime(draft.dateTime || '');
@@ -71,7 +197,8 @@ const EventCreator = () => {
 
     // Auto-save draft when data changes
     useEffect(() => {
-        if (!phoneNumber || phoneNumber.length < 10) return;
+        const digitsOnly = phoneNumber.replace(/\D/g, '');
+        if (!phoneNumber || digitsOnly.length < 10) return;
 
         if (autoSaveTimerRef.current) {
             clearTimeout(autoSaveTimerRef.current);
@@ -79,7 +206,7 @@ const EventCreator = () => {
 
         autoSaveTimerRef.current = setTimeout(() => {
             const draftData: Partial<EventDraft> & { phoneNumber: string } = {
-                phoneNumber,
+                phoneNumber: digitsOnly,
                 name: eventName,
                 dateTime,
                 location,
@@ -98,7 +225,7 @@ const EventCreator = () => {
         };
     }, [phoneNumber, eventName, dateTime, location, costPerPerson, description, customImage, gradient, saveDraft]);
 
-    // Helper functions for color analysis
+    // Helper functions for color analysis (keeping existing implementation)
     const rgbToHsl = (r: number, g: number, b: number): [number, number, number] => {
         r /= 255;
         g /= 255;
@@ -309,12 +436,31 @@ const EventCreator = () => {
     };
 
     const handlePhoneNumberSubmit = () => {
-        if (phoneNumber.length >= 10) {
+        const digitsOnly = phoneNumber.replace(/\D/g, '');
+        if (digitsOnly.length >= 10 && !validationErrors.phoneNumber) {
             setIsPhoneLocked(true);
         }
     };
 
     const handleGoLive = async () => {
+        // Validate all fields before going live
+        const errors: ValidationErrors = {
+            phoneNumber: validatePhoneNumber(phoneNumber),
+            eventName: validateEventName(eventName),
+            dateTime: validateDateTime(dateTime),
+            location: validateLocation(location),
+            costPerPerson: validateCost(costPerPerson),
+        };
+
+        // Filter out undefined errors
+        const hasErrors = Object.values(errors).some(error => error !== undefined);
+
+        if (hasErrors) {
+            setValidationErrors(errors);
+            alert('Please fix validation errors before going live');
+            return;
+        }
+
         if (!currentEvent?.id) {
             alert('Please save your draft first by entering your phone number');
             return;
@@ -352,6 +498,176 @@ const EventCreator = () => {
     };
 
     const modules = currentEvent ? getEventModules(currentEvent.id) : [];
+
+    // Date-time picker functions
+    const formatDateForDisplay = (date: Date): string => {
+        const options: Intl.DateTimeFormatOptions = {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        };
+        return date.toLocaleDateString('en-US', options);
+    };
+
+    const handleDateSelect = (date: Date) => {
+        setSelectedDate(date);
+        const formattedDate = formatDateForDisplay(date);
+        const time = selectedTime || '12:00 PM';
+        setDateTime(`${formattedDate} at ${time}`);
+        setShowDatePicker(false);
+    };
+
+    const handleTimeChange = (time: string) => {
+        setSelectedTime(time);
+        if (selectedDate) {
+            const formattedDate = formatDateForDisplay(selectedDate);
+            setDateTime(`${formattedDate} at ${time}`);
+        }
+    };
+
+    // Updated DatePicker component (replace the existing one)
+    const DatePicker = () => {
+        const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+        const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
+
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        const prevMonth = () => {
+            if (currentMonth === 0) {
+                setCurrentMonth(11);
+                setCurrentYear(currentYear - 1);
+            } else {
+                setCurrentMonth(currentMonth - 1);
+            }
+        };
+
+        const nextMonth = () => {
+            if (currentMonth === 11) {
+                setCurrentMonth(0);
+                setCurrentYear(currentYear + 1);
+            } else {
+                setCurrentMonth(currentMonth + 1);
+            }
+        };
+
+        const renderDays = () => {
+            const days = [];
+            const today = new Date();
+            const isCurrentMonth = currentMonth === today.getMonth() && currentYear === today.getFullYear();
+
+            // Empty cells
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                days.push(<div key={`empty-${i}`} className="h-12"></div>);
+            }
+
+            // Days
+            for (let day = 1; day <= daysInMonth; day++) {
+                const date = new Date(currentYear, currentMonth, day);
+                const isToday = isCurrentMonth && day === today.getDate();
+                const isSelected = selectedDate &&
+                    selectedDate.getDate() === day &&
+                    selectedDate.getMonth() === currentMonth &&
+                    selectedDate.getFullYear() === currentYear;
+
+                days.push(
+                    <button
+                        key={day}
+                        onClick={() => handleDateSelect(date)}
+                        className={`h-12 w-12 rounded-xl text-sm font-medium transition-all flex items-center justify-center
+                        ${isToday ? 'bg-white/20 ring-2 ring-white/60' : ''}
+                        ${isSelected
+                                ? 'bg-white text-black font-bold shadow-lg'
+                                : 'text-white/80 hover:bg-white/20'
+                            }`}
+                    >
+                        {day}
+                    </button>
+                );
+            }
+
+            return days;
+        };
+
+        return (
+            <div className="bg-black/30 backdrop-blur-3xl rounded-3xl border border-white/30 shadow-2xl overflow-hidden">
+                <div className="relative p-6">
+                    {/* Close button */}
+                    <button
+                        onClick={() => setShowDatePicker(false)}
+                        className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-lg transition-all z-10"
+                    >
+                        <X size={24} className="text-white/80" />
+                    </button>
+
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-6">
+                        <button
+                            onClick={prevMonth}
+                            className="p-3 hover:bg-white/10 rounded-full transition-all"
+                        >
+                            <ArrowRight size={28} className="rotate-180 text-white" />
+                        </button>
+                        <div className="text-2xl font-bold text-white">
+                            {months[currentMonth]} {currentYear}
+                        </div>
+                        <button
+                            onClick={nextMonth}
+                            className="p-3 hover:bg-white/10 rounded-full transition-all"
+                        >
+                            <ArrowRight size={28} className="text-white" />
+                        </button>
+                    </div>
+
+                    {/* Week headers */}
+                    <div className="grid grid-cols-7 gap-2 mb-3">
+                        {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(day => (
+                            <div key={day} className="text-center text-white/60 font-medium text-sm">
+                                {day}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Calendar days */}
+                    <div className="grid grid-cols-7 gap-2 mb-8">
+                        {renderDays()}
+                    </div>
+
+                    {/* Time selector */}
+                    <div>
+                        <div className="text-white/70 text-sm font-medium mb-4">Select Time</div>
+                        <div className="grid grid-cols-3 gap-3">
+                            {[
+                                '9:00 AM', '10:00 AM', '11:00 AM',
+                                '12:00 PM', '1:00 PM', '2:00 PM',
+                                '3:00 PM', '4:00 PM', '5:00 PM',
+                                '6:00 PM', '7:00 PM', '8:00 PM',
+                                '9:00 PM', '10:00 PM'
+                            ].map(time => (
+                                <button
+                                    key={time}
+                                    onClick={() => handleTimeChange(time)}
+                                    className={`py-3 rounded-xl text-sm font-medium transition-all ${selectedTime === time
+                                        ? 'bg-white text-black font-semibold'
+                                        : 'bg-white/10 hover:bg-white/20 text-white/90'
+                                        }`}
+                                >
+                                    {time}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div >
+        );
+    };
 
     return (
         <div
@@ -460,65 +776,123 @@ const EventCreator = () => {
                         )}
 
                         {/* Phone Number Input */}
-                        <div className="relative bg-black/10 backdrop-blur-sm rounded-xl sm:rounded-2xl">
-                            <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2">
-                                <Lock size={18} className="sm:w-5 sm:h-5 text-gray-300" />
+                        <div>
+                            <div className="relative bg-black/10 backdrop-blur-sm rounded-xl sm:rounded-2xl">
+                                <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2">
+                                    <Lock size={18} className="sm:w-5 sm:h-5 text-gray-300" />
+                                </div>
+                                <input
+                                    type="tel"
+                                    placeholder="Enter phone number to save the draft"
+                                    value={phoneNumber}
+                                    onChange={(e) => handlePhoneChange(e.target.value)}
+                                    disabled={isPhoneLocked}
+                                    className={`w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 bg-black/10 backdrop-blur-sm rounded-xl sm:rounded-2xl text-white placeholder-white/50 border ${validationErrors.phoneNumber ? 'border-red-400' : 'border-white/20'
+                                        } focus:outline-none focus:border-white/40 transition-all text-sm sm:text-base disabled:opacity-50`}
+                                />
+                                {!isPhoneLocked && (
+                                    <button
+                                        onClick={handlePhoneNumberSubmit}
+                                        className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 hover:bg-white/20 bg-white/10 rounded-lg transition-all"
+                                    >
+                                        <ArrowRight size={18} className="sm:w-5 sm:h-5 text-white" />
+                                    </button>
+                                )}
                             </div>
-                            <input
-                                type="tel"
-                                placeholder="Enter phone number to save the draft"
-                                value={phoneNumber}
-                                onChange={(e) => setPhoneNumber(e.target.value)}
-                                disabled={isPhoneLocked}
-                                className="w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 bg-black/10 backdrop-blur-sm rounded-xl sm:rounded-2xl text-white placeholder-white/50 border border-white/20 focus:outline-none focus:border-white/40 transition-all text-sm sm:text-base disabled:opacity-50"
-                            />
-                            {!isPhoneLocked && (
-                                <button
-                                    onClick={handlePhoneNumberSubmit}
-                                    className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 hover:bg-white/20 bg-white/10 rounded-lg transition-all"
-                                >
-                                    <ArrowRight size={18} className="sm:w-5 sm:h-5 text-white" />
-                                </button>
-                            )}
+                            <ErrorMessage error={validationErrors.phoneNumber} />
                         </div>
 
-                        {/* Event Details Card */}
-                        <div className="bg-black/20 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-3 sm:space-y-4 bg-black/30 backdrop-blur-sm border border-white/20 focus:border-white/40">
-                            <div className="flex items-center gap-3 text-white/90">
-                                <Calendar size={18} className="sm:w-5 sm:h-5 text-white/60 flex-shrink-0" />
+                        {/* Event Name Input */}
+                        <div>
+                            <div className="relative bg-black/10 backdrop-blur-sm rounded-xl sm:rounded-2xl">
+                                <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2">
+                                    <MessageSquare size={18} className="sm:w-5 sm:h-5 text-gray-300" />
+                                </div>
                                 <input
                                     type="text"
-                                    placeholder="Date and time"
-                                    value={dateTime}
-                                    onChange={(e) => setDateTime(e.target.value)}
-                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50 text-sm sm:text-base"
+                                    placeholder="Event name"
+                                    value={eventName}
+                                    onChange={(e) => handleEventNameChange(e.target.value)}
+                                    onFocus={() => setFocusedField('eventName')}
+                                    onBlur={() => setFocusedField(null)}
+                                    className={`w-full pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 bg-black/10 backdrop-blur-sm rounded-xl sm:rounded-2xl text-white placeholder-white/50 border ${validationErrors.eventName ? 'border-red-400' : 'border-white/20'
+                                        } focus:outline-none focus:border-white/40 transition-all text-sm sm:text-base`}
                                 />
+                            </div>
+                            <ErrorMessage error={validationErrors.eventName} />
+                        </div>
+
+                        {/* Event Details Card - Now with consistent full-width inputs */}
+                        <div className="bg-black/30 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-2 border border-white/20">
+                            {/* Date and Time */}
+                            <div className="relative">
+                                <div className="relative">
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
+                                        <Calendar size={18} className="sm:w-5 sm:h-5 text-white/60 flex-shrink-0" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Date and time"
+                                        value={dateTime}
+                                        onChange={(e) => handleDateTimeChange(e.target.value)}
+                                        onFocus={() => setFocusedField('dateTime')}
+                                        onBlur={() => setFocusedField(null)}
+                                        onClick={() => setShowDatePicker(true)}
+                                        className={`w-full pl-7 sm:pl-8 pr-10 sm:pr-12 py-2.5 sm:py-3 bg-black/0 rounded-xl text-white placeholder-white/50 border ${validationErrors.dateTime ? 'border-red-400' : focusedField === 'dateTime' ? 'border-white/40' : 'border-transparent'
+                                            } focus:outline-none transition-all text-sm sm:text-base cursor-pointer`}
+                                    />
+                                    <button
+                                        onClick={() => setShowDatePicker(true)}
+                                        className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 hover:bg-white/20 bg-white/10 rounded-lg transition-all"
+                                    >
+                                        <Clock size={16} className="sm:w-4 sm:h-4 text-white" />
+                                    </button>
+                                </div>
+                                <ErrorMessage error={validationErrors.dateTime} />
                             </div>
 
                             <div className="h-px bg-white/10" />
 
-                            <div className="flex items-center gap-3 text-white/90">
-                                <MapPin size={18} className="sm:w-5 sm:h-5 text-red-400 flex-shrink-0" />
-                                <input
-                                    type="text"
-                                    placeholder="Location"
-                                    value={location}
-                                    onChange={(e) => setLocation(e.target.value)}
-                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50 text-sm sm:text-base"
-                                />
+                            {/* Location */}
+                            <div>
+                                <div className="relative">
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
+                                        <MapPin size={18} className="sm:w-5 sm:h-5 text-red-400 flex-shrink-0" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Location"
+                                        value={location}
+                                        onChange={(e) => handleLocationChange(e.target.value)}
+                                        onFocus={() => setFocusedField('location')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className={`w-full pl-7 sm:pl-8 pr-3 py-2.5 sm:py-3 bg-black/0 rounded-xl text-white placeholder-white/50 border ${validationErrors.location ? 'border-red-400' : focusedField === 'location' ? 'border-white/40' : 'border-transparent'
+                                            } focus:outline-none transition-all text-sm sm:text-base`}
+                                    />
+                                </div>
+                                <ErrorMessage error={validationErrors.location} />
                             </div>
 
                             <div className="h-px bg-white/10" />
 
-                            <div className="flex items-center gap-3 text-white/90">
-                                <DollarSign size={18} className="sm:w-5 sm:h-5 text-yellow-300 flex-shrink-0" />
-                                <input
-                                    type="text"
-                                    placeholder="Cost per person"
-                                    value={costPerPerson}
-                                    onChange={(e) => setCostPerPerson(e.target.value)}
-                                    className="flex-1 bg-transparent border-none outline-none placeholder-white/50 text-sm sm:text-base"
-                                />
+                            {/* Cost per Person */}
+                            <div>
+                                <div className="relative">
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
+                                        <DollarSign size={18} className="sm:w-5 sm:h-5 text-yellow-300 flex-shrink-0" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="Cost per person"
+                                        value={costPerPerson ? formatCurrency(costPerPerson) : ''}
+                                        onChange={(e) => handleCostChange(e.target.value)}
+                                        onFocus={() => setFocusedField('costPerPerson')}
+                                        onBlur={() => setFocusedField(null)}
+                                        className={`w-full pl-7 sm:pl-8 pr-3 py-2.5 sm:py-3 bg-black/0 rounded-xl text-white placeholder-white/50 border ${validationErrors.costPerPerson ? 'border-red-400' : focusedField === 'costPerPerson' ? 'border-white/40' : 'border-transparent'
+                                            } focus:outline-none transition-all text-sm sm:text-base`}
+                                    />
+                                </div>
+                                <ErrorMessage error={validationErrors.costPerPerson} />
                             </div>
                         </div>
 
@@ -644,9 +1018,10 @@ const EventCreator = () => {
                                     <button
                                         onClick={() => setShowModuleCreator(true)}
                                         disabled={!currentEvent}
-                                        className="w-full py-3 sm:py-4 bg-gradient-to-r from-white/90 to-white/70 rounded-xl sm:rounded-2xl text-white hover:from-white hover:to-white/90 transition-all flex items-center justify-center gap-2 relative z-20 shadow-lg border border-white/50 backdrop-blur-sm text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full py-3 sm:py-4 rounded-xl sm:rounded-2xl text-white transition-all flex items-center justify-center gap-2 relative z-20 shadow-lg border border-white/50 backdrop-blur-sm text-sm sm:text-base disabled:cursor-not-allowed"
                                         style={{
-                                            background: `linear-gradient(135deg, ${gradient.primary} 0%, ${gradient.secondary} 50%, ${gradient.accent} 100%)`
+                                            background: `linear-gradient(135deg, ${gradient.primary} 0%, ${gradient.secondary} 50%, ${gradient.accent} 100%)`,
+                                            opacity: !currentEvent ? 0.5 : 1
                                         }}
                                     >
                                         <Sparkles size={18} className="sm:w-5 sm:h-5 text-yellow-200" />
@@ -668,6 +1043,24 @@ const EventCreator = () => {
                     </div>
                 </div>
             </main>
+
+            {/* Date Picker */}
+            {showDatePicker && (
+                <>
+                    {/* Dark overlay */}
+                    <div
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+                        onClick={() => setShowDatePicker(false)}
+                    />
+
+                    {/* Centered picker */}
+                    <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+                        <div className="pointer-events-auto max-w-md w-full mx-6">
+                            <DatePicker />
+                        </div>
+                    </div>
+                </>
+            )}
 
             <style>{`
                 @keyframes float {
