@@ -182,11 +182,9 @@ export const useDatabase = () => {
     try {
       const newEvent = await database.publishDraft(draftId);
       if (newEvent) {
+        // Add to main events array
         setEvents(prev => [...prev, newEvent]);
-        setDraftEvents(prev => prev.filter(draft => draft.id !== draftId));
-        if (currentEvent?.id === draftId) {
-          setCurrentEvent(null);
-        }
+        // Keep the draft for resubmission with changes
       }
       return newEvent;
     } catch (err) {
@@ -195,7 +193,7 @@ export const useDatabase = () => {
     } finally {
       setLoading(false);
     }
-  }, [setEvents, setDraftEvents, currentEvent, setCurrentEvent, setLoading, setError]);
+  }, [setEvents, setLoading, setError]);
 
   // ==================== Custom Module Operations ====================
 

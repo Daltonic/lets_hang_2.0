@@ -145,18 +145,48 @@ const EventCreator = () => {
             return;
         }
 
-        if (!currentEvent?.id) {
+        const digitsOnly = phoneNumber.replace(/\D/g, '');
+        if (!phoneNumber || digitsOnly.length < 10) {
             alert('Please save your draft first by entering your phone number');
             return;
         }
 
         try {
-            const newEvent = await publishDraft(currentEvent.id);
+            console.log('Starting publish process');
+            
+            // Save current state as draft first to ensure we have the latest changes
+            const draftData: Partial<EventDraft> & { phoneNumber: string } = {
+                phoneNumber: digitsOnly,
+                name: eventName,
+                dateTime,
+                location,
+                costPerPerson,
+                description,
+                imageUrl: customImage || 'default',
+                gradient,
+            };
+            console.log('Saving draft with data:', draftData);
+            const latestDraft = await saveDraft(draftData);
+            console.log('Draft saved:', latestDraft);
+            
+            // Publish the latest draft
+            console.log('Publishing draft:', latestDraft.id);
+            const newEvent = await publishDraft(latestDraft.id);
+            console.log('New event created:', newEvent);
+            
             if (newEvent) {
+                console.log('Going live with event:', newEvent.id);
                 await goLive(newEvent.id);
                 alert('Event is now live! 🎉');
+                
+                // Debug local storage
+                const events = JSON.parse(localStorage.getItem('letshang_events') || '[]');
+                const drafts = JSON.parse(localStorage.getItem('letshang_draft_events') || '[]');
+                console.log('Final events:', events);
+                console.log('Final drafts:', drafts);
             }
-        } catch {
+        } catch (error) {
+            console.error('Error going live:', error);
             alert('Failed to go live. Please try again.');
         }
     };

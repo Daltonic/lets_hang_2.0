@@ -16,13 +16,51 @@ const ImagePreview = ({
     const fileInputRef = useRef<HTMLInputElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
+    // Compress image to reduce file size
+    const compressImage = (imageUrl: string, maxWidth: number = 800, quality: number = 0.7): Promise<string> => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Calculate new dimensions
+                let width = img.width;
+                let height = img.height;
+                
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                // Draw and compress
+                ctx?.drawImage(img, 0, 0, width, height);
+                const compressedUrl = canvas.toDataURL('image/jpeg', quality);
+                resolve(compressedUrl);
+            };
+            img.src = imageUrl;
+        });
+    };
+
     const handleCustomImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
         const reader = new FileReader();
         reader.onload = async (event) => {
-            const imageUrl = event.target?.result as string;
+            let imageUrl = event.target?.result as string;
+            
+            // Compress image to reduce storage size
+            try {
+                imageUrl = await compressImage(imageUrl);
+                console.log('Image compressed from', event.target?.result.length, 'to', imageUrl.length, 'bytes');
+            } catch (error) {
+                console.error('Error compressing image:', error);
+            }
+            
             setCustomImage(imageUrl);
 
             try {

@@ -41,8 +41,29 @@ class DatabaseService {
       updatedAt: new Date().toISOString(),
     }
     events.push(newEvent)
-    localStorage.setItem(this.EVENTS_KEY, JSON.stringify(events))
-    return newEvent
+    
+    try {
+      localStorage.setItem(this.EVENTS_KEY, JSON.stringify(events))
+      return newEvent
+    } catch (error) {
+      console.error('Storage quota exceeded, cleaning up...')
+      console.error(error)
+      
+      // Try to free up space by removing old data
+      try {
+        // First, try removing oldest events
+        const eventsToKeep = events.slice(-3) // Keep only last 3 events
+        localStorage.setItem(this.EVENTS_KEY, JSON.stringify(eventsToKeep))
+        console.log(`Storage cleared: kept ${eventsToKeep.length} recent events`)
+        return newEvent
+      } catch (secondError) {
+        // If still failing, try removing all events
+        console.error('Still failing after removing old events, clearing all events...')
+        console.log(secondError)
+        localStorage.setItem(this.EVENTS_KEY, JSON.stringify([newEvent]))
+        return newEvent
+      }
+    }
   }
 
   async updateEvent(
@@ -60,9 +81,14 @@ class DatabaseService {
       updatedAt: new Date().toISOString(),
     }
 
-    events[eventIndex] = updatedEvent
-    localStorage.setItem(this.EVENTS_KEY, JSON.stringify(events))
-    return updatedEvent
+    try {
+      events[eventIndex] = updatedEvent
+      localStorage.setItem(this.EVENTS_KEY, JSON.stringify(events))
+      return updatedEvent
+    } catch (error) {
+      console.error('Failed to update event due to storage error:', error)
+      return null
+    }
   }
 
   async deleteEvent(id: string): Promise<void> {
@@ -100,28 +126,39 @@ class DatabaseService {
       (d) => d.phoneNumber === draft.phoneNumber,
     )
 
-    if (existingDraftIndex !== -1) {
-      // Update existing draft
-      const updatedDraft: EventDraft = {
-        ...drafts[existingDraftIndex],
-        ...draft,
-        lastSavedAt: new Date().toISOString(),
-        isDraft: true,
+    try {
+      if (existingDraftIndex !== -1) {
+        // Update existing draft
+        const updatedDraft: EventDraft = {
+          ...drafts[existingDraftIndex],
+          ...draft,
+          lastSavedAt: new Date().toISOString(),
+          isDraft: true,
+        }
+        drafts[existingDraftIndex] = updatedDraft
+        localStorage.setItem(this.DRAFT_EVENTS_KEY, JSON.stringify(drafts))
+        return updatedDraft
+      } else {
+        // Create new draft
+        const newDraft: EventDraft = {
+          id: `draft_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          ...draft,
+          isDraft: true,
+          lastSavedAt: new Date().toISOString(),
+        }
+        drafts.push(newDraft)
+        localStorage.setItem(this.DRAFT_EVENTS_KEY, JSON.stringify(drafts))
+        return newDraft
       }
-      drafts[existingDraftIndex] = updatedDraft
-      localStorage.setItem(this.DRAFT_EVENTS_KEY, JSON.stringify(drafts))
-      return updatedDraft
-    } else {
-      // Create new draft
-      const newDraft: EventDraft = {
-        id: `draft_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-        ...draft,
-        isDraft: true,
-        lastSavedAt: new Date().toISOString(),
+    } catch (error) {
+      console.error('Failed to save draft due to storage error:', error)
+      // Try to create space by clearing old drafts
+      if (drafts.length > 0) {
+        console.log('Clearing old drafts to make space...')
+        localStorage.setItem(this.DRAFT_EVENTS_KEY, JSON.stringify([]))
+        return await this.saveDraft(draft)
       }
-      drafts.push(newDraft)
-      localStorage.setItem(this.DRAFT_EVENTS_KEY, JSON.stringify(drafts))
-      return newDraft
+      throw error
     }
   }
 
@@ -132,8 +169,14 @@ class DatabaseService {
   }
 
   async publishDraft(draftId: string): Promise<Event | null> {
+    console.log('Database: Starting publishDraft for id:', draftId);
+    
     const draft = await this.getDraftById(draftId)
-    if (!draft) return null
+    if (!draft) {
+      console.log('Database: Draft not found');
+      return null
+    }
+    console.log('Database: Found draft:', draft);
 
     // Create event from draft
     const event = await this.addEvent({
@@ -153,8 +196,20 @@ class DatabaseService {
       isDraft: false,
     })
 
-    // Delete the draft
-    await this.deleteDraft(draftId)
+    console.log('Database: Event created:', event);
+    
+    // Debug local storage
+    const events = JSON.parse(localStorage.getItem(this.EVENTS_KEY) || '[]');
+    const drafts = JSON.parse(localStorage.getItem(this.DRAFT_EVENTS_KEY) || '[]');
+    console.log('Database: Events after publish:', events);
+    console.log('Database: Drafts after publish:', drafts);
+
+    // Remove the draft after successful publication
+    await this.deleteDraft(draftId);
+    
+    // Get updated drafts list to confirm deletion
+    const updatedDrafts = JSON.parse(localStorage.getItem(this.DRAFT_EVENTS_KEY) || '[]');
+    console.log('Database: Drafts after deletion:', updatedDrafts);
 
     return event
   }
