@@ -305,7 +305,12 @@ export const EventCreator = () => {
                                     <p className="text-white/40 text-sm font-bold tracking-widest">RSVP</p>
                                 </div>
 
-                                <button className="w-full py-4 bg-white/20 backdrop-blur-md rounded-2xl text-white hover:bg-white/25 transition-all flex items-center justify-center gap-2 relative z-20 shadow-lg border border-white/30">
+                                <button 
+                                    className="w-full py-4 bg-gradient-to-r from-white/90 to-white/70 rounded-2xl text-white hover:from-white hover:to-white/90 transition-all flex items-center justify-center gap-2 relative z-20 shadow-lg border border-white/50 backdrop-blur-sm"
+                                    style={{
+                                        background: `linear-gradient(135deg, ${gradient.primary} 0%, ${gradient.secondary} 50%, ${gradient.accent} 100%)`
+                                    }}
+                                >
                                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                         <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor" opacity="0.5" />
                                         <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
@@ -316,7 +321,12 @@ export const EventCreator = () => {
                         </div>
 
                         {/* Go Live Button */}
-                        <button className="w-full py-5 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-2xl text-white font-semibold text-lg hover:from-emerald-500 hover:to-emerald-600 transition-all shadow-lg flex items-center justify-center gap-2">
+                        <button 
+                            className="w-full py-5 bg-gradient-to-r from-emerald-400 to-emerald-500 rounded-2xl text-white font-semibold text-lg hover:from-emerald-500 hover:to-emerald-600 transition-all shadow-lg flex items-center justify-center gap-2 backdrop-blur-sm border border-white/30"
+                            style={{
+                                background: `linear-gradient(135deg, ${gradient.primary} 0%, ${gradient.secondary} 50%, ${gradient.accent} 100%)`
+                            }}
+                        >
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
                                 <path d="M10 8l6 4-6 4V8z" fill="currentColor" />
